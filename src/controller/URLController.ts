@@ -11,7 +11,12 @@ export class URLController {
 			response.json(url)
 			return
 		}
-		const hash = shortId.generate()
+		let hash = shortId.generate()
+		let urlHash = await URLModel.findOne({ hash })
+		while (urlHash) {
+			hash = shortId.generate()
+			urlHash = await URLModel.findOne({ hash })
+		}
 		const shortURL = `${config.API_URL}/${hash}`
 		const newURL = await URLModel.create({ hash, shortURL, originURL })
 		response.json(newURL)
